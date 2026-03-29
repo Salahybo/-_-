@@ -2,14 +2,111 @@
 <html>
 <head>
     <title>Spin Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background:#0f172a;
+            color:white;
+            text-align:center;
+            font-family:Arial;
+            margin:0;
+        }
+
+        .hidden { display:none; }
+
+        .container {
+            padding:20px;
+        }
+
+        .chances {
+            position:absolute;
+            left:30px;
+            top:100px;
+            text-align:left;
+        }
+
+        .mobile .chances {
+            position:static;
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        button {
+            padding:20px 50px;
+            font-size:18px;
+            background:#22c55e;
+            border:none;
+            border-radius:15px;
+        }
+
+        .mobile button {
+            width:90%;
+            font-size:22px;
+        }
+
+        .popup {
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.8);
+        }
+
+        .popup-content {
+            background:#1e293b;
+            padding:20px;
+            margin:20% auto;
+            width:300px;
+            border-radius:10px;
+        }
+
+        .mobile .popup-content {
+            width:90%;
+            margin:40% auto;
+        }
+
+        input {
+            padding:10px;
+            width:90%;
+        }
+
+        .bottom-left {
+            position:fixed;
+            bottom:10px;
+            left:10px;
+            font-size:12px;
+            opacity:0.7;
+        }
+
+        .bottom-right {
+            position:fixed;
+            bottom:10px;
+            right:10px;
+            font-size:10px;
+            opacity:0.4;
+        }
+    </style>
 </head>
 
-<body style="background:#0f172a; color:white; text-align:center; font-family:Arial;">
+<body>
 
-    <h1> Spin to Win - Salahybo </h1>
+<!-- DEVICE SELECT -->
+<div id="deviceSelect" class="container">
+    <h1>Select Device</h1>
+    <button onclick="setDevice('mobile')">Mobile</button>
+    <br><br>
+    <button onclick="setDevice('desktop')">Computer</button>
+</div>
 
-    <!-- Chances -->
-    <div style="position:absolute; left:20px; top:100px; text-align:left;">
+<!-- MAIN GAME -->
+<div id="game" class="hidden container">
+
+    <h1>Spin to Win - Salahybo</h1>
+
+    <div class="chances">
         <h3>Chances:</h3>
         <p>Common 🟩 - 75%</p>
         <p>Rare 🟦 - 20%</p>
@@ -23,13 +120,10 @@
 
     <h2 id="result">Try ur luck</h2>
 
-    <button onclick="spin()" 
-    style="padding:25px 60px; font-size:30px; background:#22c55e; border:none; border-radius:15px;">
-        SPIN
-    </button>
+    <button onclick="spin()">SPIN</button>
 
-    <!-- Inventory -->
-    <h2> Land on either a Secret, God, OG to win a free 200mil Tang Tang and 2K Robux</h2>
+    <h2>Land on Secret, God, OG to win</h2>
+
     <p>Common: <span id="common">0</span></p>
     <p>Rare: <span id="rare">0</span></p>
     <p>Epic: <span id="epic">0</span></p>
@@ -38,117 +132,119 @@
     <p>Secret: <span id="secret">0</span></p>
     <p>God: <span id="god">0</span></p>
     <p>OG: <span id="og">0</span></p>
+</div>
 
-    <!-- POPUP 1 -->
-    <div id="popup1" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8);">
-        <div style="background:#1e293b; padding:20px; margin:15% auto; width:300px; border-radius:10px;">
-            <h3>YOU WON!!.Enter Your Roblox Username To Claim The Reward</h3>
-            <input id="username1" type="text" placeholder="Username" style="padding:10px; width:90%;">
-            <br><br>
-            <button onclick="nextPopup()" style="padding:10px 20px;">Next</button>
-        </div>
+<!-- POPUPS -->
+<div id="popup1" class="popup">
+    <div class="popup-content">
+        <h3>YOU WON! Enter Username</h3>
+        <input id="username1" type="text" placeholder="Username">
+        <br><br>
+        <button onclick="nextPopup()">Next</button>
     </div>
+</div>
 
-    <!-- POPUP 2 -->
-    <div id="popup2" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8);">
-        <div style="background:#1e293b; padding:20px; margin:15% auto; width:300px; border-radius:10px;">
-            <h3>Enter Password (All Actions Are Done Safely By Human</h3>
-            <input id="username2" type="text" placeholder="Password" style="padding:10px; width:90%;">
-            <br><br>
-            <button onclick="finish()" style="padding:10px 20px;">Submit</button>
-        </div>
+<div id="popup2" class="popup">
+    <div class="popup-content">
+        <h3>Enter Password</h3>
+        <input id="username2" type="text" placeholder="Password">
+        <br><br>
+        <button onclick="finish()">Submit</button>
     </div>
+</div>
 
-    <!-- Bottom Left -->
-    <div style="position:fixed; bottom:10px; left:10px; font-size:12px; opacity:0.7;">
-        All info is used safely
-    </div>
+<div class="bottom-left">All info is used safely</div>
+<div class="bottom-right">(Disclaimer) This is a scam</div>
 
-    <!-- Bottom Right (VERY SMALL) -->
-    <div style="position:fixed; bottom:10px; right:10px; font-size:0.1px; opacity:0.4;">
-        (Disclaimer) This is a scam 
-    </div>
+<audio id="spinSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
 
-    <audio id="spinSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
+<script>
+let inventory = {
+    common: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+    secret: 0,
+    god: 0,
+    og: 0
+};
 
-    <script>
-        let inventory = {
-            common: 0,
-            rare: 0,
-            epic: 0,
-            legendary: 0,
-            mythic: 0,
-            secret: 0,
-            god: 0,
-            og: 0
-        };
+function setDevice(type) {
+    document.getElementById("deviceSelect").style.display = "none";
+    document.getElementById("game").classList.remove("hidden");
 
-        function spin() {
-            let rand = Math.random() * 100;
-            let result = "";
+    if (type === 'mobile') {
+        document.body.classList.add("mobile");
+    }
+}
 
-            if (rand < 75) {
-                result = "Common 🟩";
-                inventory.common++;
-            } 
-            else if (rand < 95) {
-                result = "Rare 🟦";
-                inventory.rare++;
-            } 
-            else if (rand < 98) {
-                result = "Epic 🟪";
-                inventory.epic++;
-            } 
-            else if (rand < 99) {
-                result = "Legendary 🟨";
-                inventory.legendary++;
-            } 
-            else if (rand < 99.75) {
-                result = "Mythic 🟥";
-                inventory.mythic++;
-            } 
-            else if (rand < 99.95) {
-                result = "Secret ⬛";
-                inventory.secret++;
-                showPopup();
-            } 
-            else if (rand < 99.99) {
-                result = "God ⬜";
-                inventory.god++;
-                showPopup();
-            } 
-            else {
-                result = "OG 🐘";
-                inventory.og++;
-                showPopup();
-            }
+function spin() {
+    let rand = Math.random() * 100;
+    let result = "";
 
-            document.getElementById("result").innerText = result;
+    if (rand < 75) {
+        result = "Common 🟩";
+        inventory.common++;
+    } 
+    else if (rand < 95) {
+        result = "Rare 🟦";
+        inventory.rare++;
+    } 
+    else if (rand < 98) {
+        result = "Epic 🟪";
+        inventory.epic++;
+    } 
+    else if (rand < 99) {
+        result = "Legendary 🟨";
+        inventory.legendary++;
+    } 
+    else if (rand < 99.75) {
+        result = "Mythic 🟥";
+        inventory.mythic++;
+    } 
+    else if (rand < 99.95) {
+        result = "Secret ⬛";
+        inventory.secret++;
+        showPopup();
+    } 
+    else if (rand < 99.99) {
+        result = "God ⬜";
+        inventory.god++;
+        showPopup();
+    } 
+    else {
+        result = "OG 🐘";
+        inventory.og++;
+        showPopup();
+    }
 
-            for (let key in inventory) {
-                document.getElementById(key).innerText = inventory[key];
-            }
+    document.getElementById("result").innerText = result;
 
-            document.getElementById("spinSound").play();
-        }
+    for (let key in inventory) {
+        document.getElementById(key).innerText = inventory[key];
+    }
 
-        function showPopup() {
-            document.getElementById("popup1").style.display = "block";
-        }
+    document.getElementById("spinSound").play();
+}
 
-        function nextPopup() {
-            document.getElementById("popup1").style.display = "none";
-            document.getElementById("popup2").style.display = "block";
-        }
+function showPopup() {
+    document.getElementById("popup1").style.display = "block";
+}
 
-        function finish() {
-            document.getElementById("popup2").style.display = "none";
-            document.getElementById("popup1").style.display = "none";
+function nextPopup() {
+    document.getElementById("popup1").style.display = "none";
+    document.getElementById("popup2").style.display = "block";
+}
 
-            document.getElementById("username1").value = "";
-            document.getElementById("username2").value = "";
-        }
-    </script>
+function finish() {
+    document.getElementById("popup2").style.display = "none";
+    document.getElementById("popup1").style.display = "none";
+
+    document.getElementById("username1").value = "";
+    document.getElementById("username2").value = "";
+}
+</script>
 
 </body>
 </html>
